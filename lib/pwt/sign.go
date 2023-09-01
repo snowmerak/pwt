@@ -118,17 +118,26 @@ func (p *PWT) makeWithoutSignature() ([]byte, error) {
 	hashed := make([]byte, 0)
 
 	switch p.token.Header.Algorithm.Hash {
+	case token.HashAlgorithm_SHA3_256:
+		b := sha3.Sum256(payloadsBuffer)
+		hashed = b[:]
 	case token.HashAlgorithm_SHA3_384:
 		b := sha3.Sum384(payloadsBuffer)
 		hashed = b[:]
 	case token.HashAlgorithm_SHA3_512:
 		b := sha3.Sum512(payloadsBuffer)
 		hashed = b[:]
+	case token.HashAlgorithm_BLAKE2B_256:
+		b := blake2b.Sum256(payloadsBuffer)
+		hashed = b[:]
 	case token.HashAlgorithm_BLAKE2B_384:
 		b := blake2b.Sum384(payloadsBuffer)
 		hashed = b[:]
 	case token.HashAlgorithm_BLAKE2B_512:
 		b := blake2b.Sum512(payloadsBuffer)
+		hashed = b[:]
+	case token.HashAlgorithm_BLAKE2S_256:
+		b := blake2b.Sum256(payloadsBuffer)
 		hashed = b[:]
 	case token.HashAlgorithm_BLAKE2S_384:
 		b := blake2b.Sum384(payloadsBuffer)
@@ -152,15 +161,23 @@ func (p *PWT) makeWithoutSignature() ([]byte, error) {
 func (p *PWT) signHMac(hashed []byte, secret []byte) ([]byte, error) {
 	hs := hmac.New(func() hash.Hash {
 		switch p.token.Header.Algorithm.Hash {
+		case token.HashAlgorithm_SHA3_256:
+			return sha3.New256()
 		case token.HashAlgorithm_SHA3_384:
 			return sha3.New384()
 		case token.HashAlgorithm_SHA3_512:
 			return sha3.New512()
+		case token.HashAlgorithm_BLAKE2B_256:
+			h, _ := blake2b.New256(nil)
+			return h
 		case token.HashAlgorithm_BLAKE2B_384:
 			h, _ := blake2b.New384(nil)
 			return h
 		case token.HashAlgorithm_BLAKE2B_512:
 			h, _ := blake2b.New512(nil)
+			return h
+		case token.HashAlgorithm_BLAKE2S_256:
+			h, _ := blake2b.New256(nil)
 			return h
 		case token.HashAlgorithm_BLAKE2S_384:
 			h, _ := blake2b.New384(nil)

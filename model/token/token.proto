@@ -12,14 +12,17 @@ enum SignatureAlgorithm {
 }
 
 enum HashAlgorithm {
-  SHA3_384 = 0;
-  SHA3_512 = 1;
-  BLAKE2B_384 = 2;
-  BLAKE2B_512 = 3;
-  BLAKE2S_384 = 4;
-  BLAKE2S_512 = 5;
-  BLAKE3_256 = 6;
-  BLAKE3_512 = 7;
+  SHA3_256 = 0;
+  SHA3_384 = 1;
+  SHA3_512 = 2;
+  BLAKE2B_256 = 3;
+  BLAKE2B_384 = 4;
+  BLAKE2B_512 = 5;
+  BLAKE2S_256 = 6;
+  BLAKE2S_384 = 7;
+  BLAKE2S_512 = 8;
+  BLAKE3_256 = 9;
+  BLAKE3_512 = 10;
 }
 
 message Algorithm {
