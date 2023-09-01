@@ -3,6 +3,7 @@ package pwt
 import (
 	"bytes"
 	"crypto/ecdsa"
+	"crypto/ed25519"
 	"crypto/hmac"
 	"crypto/rand"
 	"encoding/base64"
@@ -42,17 +43,12 @@ func (p *PWT) Sign(secret []byte) (string, error) {
 
 		p.token.Signature = signature
 	case token.SignatureAlgorithm_ED25519:
-		parsedKey, err := getECPrivateKeyFromPem(secret)
+		parsedKey, err := getEd25519PrivateKeyFromPem(secret)
 		if err != nil {
 			return "", err
 		}
 
-		signature, err := ecdsa.SignASN1(rand.Reader, parsedKey, hashed)
-		if err != nil {
-			return "", err
-		}
-
-		p.token.Signature = signature
+		p.token.Signature = ed25519.Sign(parsedKey, hashed)
 	}
 
 	buf, err := proto.Marshal(p.token)
@@ -89,16 +85,16 @@ func (p *PWT) Verify(secret []byte) error {
 			return err
 		}
 
-		if ecdsa.VerifyASN1(parsedKey, hashed, p.token.Signature) {
+		if !ecdsa.VerifyASN1(parsedKey, hashed, p.token.Signature) {
 			return errors.New("invalid signature")
 		}
 	case token.SignatureAlgorithm_ED25519:
-		parsedKey, err := getECPublicKeyFromPem(secret)
+		parsedKey, err := getEd25519PublicKeyFromPem(secret)
 		if err != nil {
 			return err
 		}
 
-		if !ecdsa.VerifyASN1(parsedKey, hashed, p.token.Signature) {
+		if !ed25519.Verify(parsedKey, hashed, p.token.Signature) {
 			return err
 		}
 	}
