@@ -6,6 +6,7 @@ import (
 	"github.com/snowmerak/pwt/gen/grpc/model/token"
 	"google.golang.org/protobuf/proto"
 	"math"
+	"reflect"
 )
 
 func SetPayload[T any](pwt *PWT, key string, value T) error {
@@ -123,7 +124,76 @@ func SetPayload[T any](pwt *PWT, key string, value T) error {
 			Value: buf,
 		}
 	default:
-		return errInvalidPayloadType
+		rf := reflect.ValueOf(v)
+		switch rf.Kind() {
+		case reflect.Int:
+			if err := SetPayload(pwt, key, int(rf.Int())); err != nil {
+				return err
+			}
+		case reflect.Int8:
+			if err := SetPayload(pwt, key, int8(rf.Int())); err != nil {
+				return err
+			}
+		case reflect.Int16:
+			if err := SetPayload(pwt, key, int16(rf.Int())); err != nil {
+				return err
+			}
+		case reflect.Int32:
+			if err := SetPayload(pwt, key, int32(rf.Int())); err != nil {
+				return err
+			}
+		case reflect.Int64:
+			if err := SetPayload(pwt, key, rf.Int()); err != nil {
+				return err
+			}
+		case reflect.Uint:
+			if err := SetPayload(pwt, key, uint(rf.Uint())); err != nil {
+				return err
+			}
+		case reflect.Uint8:
+			if err := SetPayload(pwt, key, uint8(rf.Uint())); err != nil {
+				return err
+			}
+		case reflect.Uint16:
+			if err := SetPayload(pwt, key, uint16(rf.Uint())); err != nil {
+				return err
+			}
+		case reflect.Uint32:
+			if err := SetPayload(pwt, key, uint32(rf.Uint())); err != nil {
+				return err
+			}
+		case reflect.Uint64:
+			if err := SetPayload(pwt, key, rf.Uint()); err != nil {
+				return err
+			}
+		case reflect.Float32:
+			if err := SetPayload(pwt, key, float32(rf.Float())); err != nil {
+				return err
+			}
+		case reflect.Float64:
+			if err := SetPayload(pwt, key, rf.Float()); err != nil {
+				return err
+			}
+		case reflect.String:
+			if err := SetPayload(pwt, key, rf.String()); err != nil {
+				return err
+			}
+		case reflect.Slice:
+			switch rf.CanConvert(reflect.SliceOf(reflect.TypeOf(byte(0)))) {
+			case true:
+				if err := SetPayload(pwt, key, rf.Bytes()); err != nil {
+					return err
+				}
+			default:
+				return errInvalidPayloadType
+			}
+		case reflect.Bool:
+			if err := SetPayload(pwt, key, rf.Bool()); err != nil {
+				return err
+			}
+		default:
+			return errInvalidPayloadType
+		}
 	}
 
 	return nil
@@ -274,7 +344,106 @@ func GetPayload[T any](pwt *PWT, key string) (T, error) {
 		}
 		r = m
 	default:
-		return r.(T), errInvalidPayloadType
+		rf := reflect.ValueOf(r)
+		switch rf.Kind() {
+		case reflect.Int:
+			v, err := GetPayload[int](pwt, key)
+			if err != nil {
+				return r.(T), err
+			}
+			r = reflect.ValueOf(v).Convert(rf.Type()).Interface()
+		case reflect.Int8:
+			v, err := GetPayload[int8](pwt, key)
+			if err != nil {
+				return r.(T), err
+			}
+			r = reflect.ValueOf(v).Convert(rf.Type()).Interface()
+		case reflect.Int16:
+			v, err := GetPayload[int16](pwt, key)
+			if err != nil {
+				return r.(T), err
+			}
+			r = reflect.ValueOf(v).Convert(rf.Type()).Interface()
+		case reflect.Int32:
+			v, err := GetPayload[int32](pwt, key)
+			if err != nil {
+				return r.(T), err
+			}
+			r = reflect.ValueOf(v).Convert(rf.Type()).Interface()
+		case reflect.Int64:
+			v, err := GetPayload[int64](pwt, key)
+			if err != nil {
+				return r.(T), err
+			}
+			r = reflect.ValueOf(v).Convert(rf.Type()).Interface()
+		case reflect.Uint:
+			v, err := GetPayload[uint](pwt, key)
+			if err != nil {
+				return r.(T), err
+			}
+			r = reflect.ValueOf(v).Convert(rf.Type()).Interface()
+		case reflect.Uint8:
+			v, err := GetPayload[uint8](pwt, key)
+			if err != nil {
+				return r.(T), err
+			}
+			r = reflect.ValueOf(v).Convert(rf.Type()).Interface()
+		case reflect.Uint16:
+			v, err := GetPayload[uint16](pwt, key)
+			if err != nil {
+				return r.(T), err
+			}
+			r = reflect.ValueOf(v).Convert(rf.Type()).Interface()
+		case reflect.Uint32:
+			v, err := GetPayload[uint32](pwt, key)
+			if err != nil {
+				return r.(T), err
+			}
+			r = reflect.ValueOf(v).Convert(rf.Type()).Interface()
+		case reflect.Uint64:
+			v, err := GetPayload[uint64](pwt, key)
+			if err != nil {
+				return r.(T), err
+			}
+			r = reflect.ValueOf(v).Convert(rf.Type()).Interface()
+		case reflect.Float32:
+			v, err := GetPayload[float32](pwt, key)
+			if err != nil {
+				return r.(T), err
+			}
+			r = reflect.ValueOf(v).Convert(rf.Type()).Interface()
+		case reflect.Float64:
+			v, err := GetPayload[float64](pwt, key)
+			if err != nil {
+				return r.(T), err
+			}
+			r = reflect.ValueOf(v).Convert(rf.Type()).Interface()
+		case reflect.String:
+			v, err := GetPayload[string](pwt, key)
+			if err != nil {
+				return r.(T), err
+			}
+			r = reflect.ValueOf(v).Convert(rf.Type()).Interface()
+		case reflect.Slice:
+			switch rf.CanConvert(reflect.SliceOf(reflect.TypeOf(byte(0)))) {
+			case true:
+				v, err := GetPayload[[]byte](pwt, key)
+				if err != nil {
+					return r.(T), err
+				}
+				r = reflect.ValueOf(v).Convert(rf.Type()).Interface()
+			default:
+				return r.(T), errInvalidPayloadType
+			}
+		case reflect.Bool:
+			v, err := GetPayload[bool](pwt, key)
+			if err != nil {
+				return r.(T), err
+			}
+			r = reflect.ValueOf(v).Convert(rf.Type()).Interface()
+		default:
+			return r.(T), errInvalidPayloadType
+		}
 	}
 
 	return r.(T), nil
