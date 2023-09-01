@@ -91,14 +91,14 @@ func SetPayload[T any](pwt *PWT, key string, value T) error {
 			Value: buf,
 		}
 	case string:
-		buf := make([]byte, 4+len(v))
+		buf := make([]byte, 4, 4+len(v))
 		binary.BigEndian.PutUint32(buf, uint32(len(v)))
 		pwt.token.Payloads[key] = &token.Payload{
 			Type:  token.PayloadType_STRING,
 			Value: append(buf, []byte(v)...),
 		}
 	case []byte:
-		buf := make([]byte, 4+len(v))
+		buf := make([]byte, 4, 4+len(v))
 		binary.BigEndian.PutUint32(buf, uint32(len(v)))
 		pwt.token.Payloads[key] = &token.Payload{
 			Type:  token.PayloadType_BYTES,
