@@ -55,7 +55,7 @@ func (p *PWT) Sign(secret []byte) (string, error) {
 		p.token.Signature = signature
 	}
 
-	buf, err := proto.Marshal(&p.token)
+	buf, err := proto.Marshal(p.token)
 	if err != nil {
 		return "", err
 	}
