@@ -2,9 +2,13 @@ package pwt
 
 import (
 	"crypto/ecdsa"
+	"crypto/ed25519"
+	"crypto/elliptic"
+	"crypto/rand"
 	"crypto/x509"
 	"encoding/pem"
 	"errors"
+	"github.com/snowmerak/pwt/lib/seeder"
 )
 
 func getECPrivateKeyFromPem(secret []byte) (*ecdsa.PrivateKey, error) {
@@ -69,4 +73,20 @@ func makeECPublicKeyToPem(pk *ecdsa.PublicKey) ([]byte, error) {
 	})
 
 	return rs, nil
+}
+
+func NewEcdsaKey(curve elliptic.Curve) (*ecdsa.PrivateKey, error) {
+	return ecdsa.GenerateKey(curve, rand.Reader)
+}
+
+func NewEcdsaKeyFromSeed(curve elliptic.Curve, seed []byte) (*ecdsa.PrivateKey, error) {
+	return ecdsa.GenerateKey(curve, seeder.New(seed))
+}
+
+func NewEd25519Key() (ed25519.PublicKey, ed25519.PrivateKey, error) {
+	return ed25519.GenerateKey(rand.Reader)
+}
+
+func NewEd25519KeyFromSeed(seed []byte) (ed25519.PrivateKey, error) {
+	return ed25519.NewKeyFromSeed(seed), nil
 }
