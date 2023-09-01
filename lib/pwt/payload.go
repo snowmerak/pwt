@@ -8,7 +8,7 @@ import (
 	"math"
 )
 
-func AddPayloads[T PayloadTypes](pwt *PWT, key string, value T) error {
+func SetPayload[T any](pwt *PWT, key string, value T) error {
 	switch v := any(value).(type) {
 	case int:
 		buf := make([]byte, 8)
@@ -129,7 +129,7 @@ func AddPayloads[T PayloadTypes](pwt *PWT, key string, value T) error {
 	return nil
 }
 
-func GetPayloads[T PayloadTypes](pwt *PWT, key string) (T, error) {
+func GetPayload[T any](pwt *PWT, key string) (T, error) {
 	r := any(*new(T))
 	payload, ok := pwt.token.Payloads[key]
 	if !ok {
