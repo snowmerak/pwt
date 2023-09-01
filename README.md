@@ -48,7 +48,15 @@ func main() {
 	if err := at.Verify(secret); err != nil {
 		panic(err)
 	}
+	
+	v, err := pwt.GetPayload[int64](at, "test")
+	if err != nil {
+        panic(err)
+    }
+	
+	fmt.Println(v)
 }
 
 // CggKBAgBEAYQARIUCgR0ZXN0EgwIBBIIAAAAAAAAAHsaIOzezSm6d2UCzzR82tM2yXMmYCFuiTgkO4c5PYYQ9wSE
+// 123
 ```
