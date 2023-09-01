@@ -1,0 +1,91 @@
+syntax = "proto3";
+
+package token;
+
+option go_package = "model/token";
+
+enum SignatureAlgorithm {
+    NONE = 0;
+    HMAC = 1;
+    ECDSA = 2;
+    ED25519 = 3;
+}
+
+enum HashAlgorithm {
+  SHA3_384 = 0;
+  SHA3_512 = 1;
+  BLAKE2B_384 = 2;
+  BLAKE2B_512 = 3;
+  BLAKE2S_384 = 4;
+  BLAKE2S_512 = 5;
+  BLAKE3_256 = 6;
+  BLAKE3_512 = 7;
+}
+
+message Algorithm {
+    SignatureAlgorithm signature = 1;
+    HashAlgorithm hash = 2;
+}
+
+enum Type {
+     ACCESS = 0;
+     REFRESH = 1;
+     RESET_PASSWORD = 2;
+     VERIFY_EMAIL = 3;
+     VERIFY_PHONE = 4;
+     VERIFY_IDENTITY = 5;
+     VERIFY_ADDRESS = 6;
+     VERIFY_DOCUMENT = 7;
+     VERIFY_FACE = 8;
+     VERIFY_FINGERPRINT = 9;
+     VERIFY_VOICE = 10;
+     VERIFY_EYE = 11;
+     VERIFY_SIGNATURE = 12;
+     VERIFY_BEHAVIOR = 13;
+     VERIFY_LOCATION = 14;
+     VERIFY_DEVICE = 15;
+     VERIFY_BIOMETRIC = 16;
+     VERIFY_OTP = 17;
+     VERIFY_PIN = 18;
+     VERIFY_PATTERN = 19;
+     VERIFY_PASSWORD = 20;
+     VERIFY_ANSWER = 21;
+     VERIFY_QUESTION = 22;
+     VERIFY_TOKEN = 23;
+     VERIFY_CODE = 24;
+}
+
+enum PayloadType {
+    INT = 0;
+    INT8 = 1;
+    INT16 = 2;
+    INT32 = 3;
+    INT64 = 4;
+    UINT = 5;
+    UINT8 = 6;
+    UINT16 = 7;
+    UINT32 = 8;
+    UINT64 = 9;
+    FLOAT32 = 10;
+    FLOAT64 = 11;
+    STRING = 12;
+    BYTES = 13;
+    BOOL = 14;
+    MESSAGE = 15;
+}
+
+message Payload {
+    PayloadType type = 1;
+    bytes value = 2;
+}
+
+message Header {
+    Algorithm algorithm = 1;
+    Type type = 2;
+}
+
+message Token {
+    Header header = 1;
+    map<string, Payload> payloads = 2;
+    bytes signature = 3;
+}
