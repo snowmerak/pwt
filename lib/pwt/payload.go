@@ -200,6 +200,10 @@ func SetPayload[T any](pwt *PWT, key string, value T) error {
 }
 
 func GetPayload[T any](pwt *PWT, key string) (T, error) {
+	if pwt == nil || pwt.token == nil || pwt.token.Payloads == nil {
+		return any(*new(T)).(T), errors.New("invalid pwt")
+	}
+
 	r := any(*new(T))
 	payload, ok := pwt.token.Payloads[key]
 	if !ok {
