@@ -14,6 +14,7 @@ import (
 	"google.golang.org/protobuf/proto"
 	"hash"
 	"lukechampine.com/blake3"
+	"sort"
 )
 
 func (p *PWT) Sign(secret []byte) (string, error) {
@@ -103,18 +104,30 @@ func (p *PWT) Verify(secret []byte) error {
 }
 
 func (p *PWT) makeWithoutSignature() ([]byte, error) {
-	if p.token.Header == nil && p.token.Header.Algorithm == nil {
+	if p.token == nil && p.token.Header == nil && p.token.Header.Algorithm == nil {
 		return nil, errors.New("header is nil")
 	}
 
-	withoutSign := &token.Token{
-		Header:   p.token.Header,
-		Payloads: p.token.Payloads,
-	}
-	payloadsBuffer, err := proto.Marshal(withoutSign)
+	buffer := bytes.NewBuffer(nil)
+	data, err := proto.Marshal(p.token.Header)
 	if err != nil {
 		return nil, err
 	}
+	buffer.Write(data)
+
+	payloadKeys := make([]string, 0, len(p.token.Payloads))
+	for k := range p.token.Payloads {
+		payloadKeys = append(payloadKeys, k)
+	}
+	sort.Strings(payloadKeys)
+
+	for _, k := range payloadKeys {
+		buffer.Write([]byte(k))
+		buffer.Write(p.token.Payloads[k].Value)
+	}
+
+	payloadsBuffer := buffer.Bytes()
+
 	hashed := make([]byte, 0)
 
 	switch p.token.Header.Algorithm.Hash {
